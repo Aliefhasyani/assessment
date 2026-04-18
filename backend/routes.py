@@ -8,7 +8,7 @@ router = APIRouter(
     tags=["tickets"]
 )
 
-N8N_WEBHOOK_URL = "http://localhost:5678/webhook/test-ticket"
+N8N_WEBHOOK_URL = "http://localhost:5678/webhook-test/test-ticket"
 
 @router.post("/", response_model=schemas.TicketResponse)
 def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(database.get_db)):
