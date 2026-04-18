@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks 
 from sqlalchemy.orm import Session
 import models, schemas, database
 import requests
@@ -10,24 +10,32 @@ router = APIRouter(
 
 N8N_WEBHOOK_URL = "http://localhost:5678/webhook-test/test-ticket"
 
+def send_to_n8n(ticket_id: int, title: str, description: str):
+    try:
+        payload = {
+            "ticket_id": ticket_id,
+            "title": title,
+            "description": description
+        }
+        requests.post(N8N_WEBHOOK_URL, json=payload, timeout=5)
+    except Exception as e:
+        print(f"Log: Gagal kirim ke n8n di background. Error: {e}")
+
 @router.post("/", response_model=schemas.TicketResponse)
-def create_ticket(ticket: schemas.TicketCreate, db: Session = Depends(database.get_db)):
+def create_ticket(
+    ticket: schemas.TicketCreate, 
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(database.get_db)
+):
     new_ticket = models.Ticket(**ticket.model_dump())
     db.add(new_ticket)
     db.commit()
     db.refresh(new_ticket)
     
-    try:
-        payload = {
-            "ticket_id": new_ticket.id,
-            "title": new_ticket.title,
-            "description": new_ticket.description
-        }
-        requests.post(N8N_WEBHOOK_URL, json=payload, timeout=5)
-    except Exception as e:
-        print(f"Log: n8n belum aktif atau URL salah, tapi tiket tersimpan di DB. Error: {e}")
-        
+    background_tasks.add_task(send_to_n8n, new_ticket.id, new_ticket.title, new_ticket.description)
+    
     return new_ticket
+
 
 @router.get("/", response_model=list[schemas.TicketResponse])
 def get_tickets(db: Session = Depends(database.get_db)):
