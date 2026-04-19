@@ -8,7 +8,7 @@ router = APIRouter(
     tags=["tickets"]
 )
 
-N8N_WEBHOOK_URL = "http://localhost:5678/webhook-test/test-ticket"
+N8N_WEBHOOK_URL = "http://localhost:5678/webhook/test-ticket"
 
 def send_to_n8n(ticket_id: int, title: str, description: str):
     try:
