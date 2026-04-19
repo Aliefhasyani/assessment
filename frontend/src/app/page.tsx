@@ -28,7 +28,7 @@ export default function Home() {
   const fetchTickets = async (showLoading = true) => {
     if (showLoading) setLoading(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL;
       const res = await fetch(`${apiUrl}/tickets/`);
       if (res.ok) {
         const data = await res.json();

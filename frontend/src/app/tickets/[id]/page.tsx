@@ -27,7 +27,7 @@ export default function TicketDetail() {
     if (!id) return;
     if (showLoading) setLoading(true);
     try {
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL ;
       const res = await fetch(`${apiUrl}/tickets/${id}`);
       if (res.ok) {
         const data = await res.json();
