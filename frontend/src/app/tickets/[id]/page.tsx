@@ -87,7 +87,7 @@ export default function TicketDetail() {
               {ticket.title}
             </h2>
             <div className="text-[0.9rem] text-textSecondary">
-              Submitted by <strong className="text-white">{ticket.submitted_by}</strong> on {new Date(ticket.created_at).toLocaleString()}
+              Pelapor <strong className="text-white">{ticket.submitted_by}</strong> on {new Date(ticket.created_at).toLocaleString()}
             </div>
           </div>
           <span className={`px-3 py-1.5 rounded-full text-[0.8rem] font-semibold uppercase tracking-[0.5px] inline-block border ${
@@ -127,7 +127,7 @@ export default function TicketDetail() {
                 <div className="bg-[#161b22]/40 p-4 rounded-lg border border-[#30363d]">
                   <div className="text-[#8b949e] font-medium text-sm mb-2">Tingkat Keparahan</div>
                   <div className="text-[1.25rem] font-semibold text-white">
-                    {ticket.severity_score} <span className="text-[#8b949e] text-[0.9rem] font-normal">/ 10</span>
+                    {ticket.severity_score} <span className="text-[#8b949e] text-[0.9rem] font-normal">/ 100</span>
                   </div>
                 </div>
               </div>

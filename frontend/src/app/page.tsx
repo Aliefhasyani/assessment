@@ -146,7 +146,7 @@ export default function Home() {
                   <div className="flex justify-between items-center text-[0.85rem]">
                     <span className="text-textSecondary font-medium">Skor Keparahan</span>
                     <span className="font-semibold text-white">
-                      {t.severity_score !== null ? t.severity_score : "-"} / 10
+                      {t.severity_score !== null ? t.severity_score : "-"} / 100
                     </span>
                   </div>
                 </div>
