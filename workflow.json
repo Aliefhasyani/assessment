@@ -1,0 +1,137 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "test-ticket",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "454d9e36-aa9e-4b6a-b27c-300922dc41c8",
+      "name": "Webhook",
+      "webhookId": "06a3cc4d-b52b-4163-b1dc-dc7b0edd0052"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Return ONLY a JSON object. No conversational text.\n{\n  \"urgency_level\": \"High\",\n  \"severity_score\": 85,\n  \"reasoning\": \"Penjelasan singkat.\"\n}\n\nTicket to analyze:\nTitle: {{ $json.body.title }}\nDescription: {{ $json.body.description }}",
+        "hasOutputParser": true,
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        416,
+        0
+      ],
+      "id": "48933f8e-1799-4c21-91a8-a880999e7328",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "model": "llama-3.3-70b-versatile",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        272,
+        144
+      ],
+      "id": "d364ea01-f4f2-467d-9c14-0e47dd3efc40",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "Ke6nujCrn0ERIrjv",
+          "name": "Groq account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=http://host.docker.internal:8000/tickets/{{ $node[\"Webhook\"].json.body.ticket_id }}/analysis",
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "urgency_level",
+              "value": "={{ JSON.parse($node[\"Basic LLM Chain\"].json.text).urgency_level }}"
+            },
+            {
+              "name": "severity_score",
+              "value": "={{ Number(JSON.parse($node[\"Basic LLM Chain\"].json.text).severity_score) }}"
+            },
+            {
+              "name": "reasoning",
+              "value": "={{ JSON.parse($node[\"Basic LLM Chain\"].json.text).reasoning }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        704,
+        16
+      ],
+      "id": "aa52ab04-15ec-4104-804f-ab22493f01ba",
+      "name": "HTTP Request"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "90387816-448b-471d-9eca-61e1e00f803c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "321088d71f97b72589dca3b754a8883867ad6e7fcf0a5a1bcfbd63dd19f8eb22"
+  },
+  "id": "OXuC7sIax7H2su9p",
+  "tags": []
+}
